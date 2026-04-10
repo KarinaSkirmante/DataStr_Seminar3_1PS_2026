@@ -132,6 +132,33 @@ public class MyHeap <Ttype> {
 			}
 		}
 	}
+	
+	
+	public Ttype getMaxElement() throws Exception{
+		if(isEmpty()) {
+			throw new Exception("Kaudze ir tukša un nav prioritārais elements");
+		}
 		
+		Ttype maxElement = rootNode.getElement();
+		
+		rootNode.setElement(lastNode.getElement());
+		
+		MyNode tempParentNode = lastNode.getParentNode();
+		//ja tas ir kreisais bērnus, kurš jādzēš
+		//eksistē kreisais bērns, bet nav labais, tad jādzēš kreisais
+		if(tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode()==null) {
+			tempParentNode.setLeftChildNode(null);
+		}
+		//ja ir abi bērnu, tad labais būs jādzēš
+		else if(tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode()!=null)
+		{
+			tempParentNode.setRightChildNode(null);
+		}
+		
+		//TODO reheapDown(rootNode);
+		howManyElements--;
+		return maxElement;
+	}
+	
 	
 }
