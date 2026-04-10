@@ -4,6 +4,7 @@ public class MyHeap <Ttype> {
 	private MyNode<Ttype> rootNode = null;
 	private MyNode<Ttype> lastNode = null;
 	private int howManyElements = 0;
+	private int level = 0;
 	
 	public int getHowManyElements() {
 		return howManyElements;
@@ -28,5 +29,72 @@ public class MyHeap <Ttype> {
 
 	}
 
+	
+	public void add(Ttype element) throws Exception{
+		if(isFull()) {
+			throw new Exception("Kaudze ir pilna un nevar pievienot jaunu elementu");
+		}
+		
+		if(element == null) {
+			throw new Exception("Ievades elements nevar būt null");
+		}
+		
+		//ja kaudze ir tukša, tad jaunais bloks būs vienīagis
+		if(isEmpty()) {
+			MyNode newNode = new MyNode(element);
+			rootNode = newNode;
+			lastNode = newNode;
+			howManyElements++;
+		}
+		//jāpievieno kārtejais elements
+		else
+		{
+			MyNode newNode = new MyNode(element);
+			//pievienot jauno bloku, lai nodrošinātu formas īpašību
+			//pievienot pie sakni
+			if(howManyElements == 1) {
+				newNode.setParentNode(rootNode);
+				rootNode.setLeftChildNode(newNode);
+				lastNode = newNode;
+				level++;
+			}
+			
+			//noskaidrojam, vai ir eksistējošam blokam labās puses māsa/brālis
+			if(lastNode.getParentNode().getRightChildNode() == null) {
+				lastNode.getParentNode().setRightChildNode(newNode);
+				newNode.setParentNode(lastNode.getParentNode());
+				lastNode = newNode;
+			}
+			
+			//2^0 - 0. līmenī ir 1 bērns
+			//2^1 - 1. līmenī ir 2 bērni
+			//2^2 - 2. līmenī ir 4 bērni
+			int sum = 0;
+			for(int i = 0; i < level; i++) {
+				sum += Math.pow(2, i);
+			}
+			//ja lastNode ir konkrētajā līmenī pēdējais bloks
+			if(howManyElements == sum) {//šo var optimizēt ar howManyElements == 1 scenāriju
+				MyNode currentNode = rootNode;
+				
+				while(currentNode.getLeftChildNode()!=null) {
+					currentNode = currentNode.getLeftChildNode();
+				}
+				
+				currentNode.setLeftChildNode(newNode);
+				newNode.setParentNode(currentNode);
+				lastNode = newNode;
+			}
+			
+			
+			
+			
+			//TODO reheapUp(newNode);
+			howManyElements++;
+			
+		}
+		
+	}
+	
 	
 }
