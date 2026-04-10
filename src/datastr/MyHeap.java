@@ -160,5 +160,33 @@ public class MyHeap <Ttype> {
 		return maxElement;
 	}
 	
-	
+	private void reheahDown(MyNode node) {
+		if(node!=null) {
+			//ir tikai kreisais berns
+			if(node.getLeftChildNode() !=null  && node.getRightChildNode() == null)
+			{
+				MyNode tempLeftChildNode = node.getLeftChildNode();
+				
+				if(  ((Comparable)tempLeftChildNode.getElement()).compareTo(node.getElement()) > 0 ) {
+					Ttype tempElement = (Ttype)tempLeftChildNode.getElement();
+					tempLeftChildNode.setElement(node.getElement());
+					node.setElement(tempElement);
+				}
+				
+			}
+			else if(node.getLeftChildNode() !=null  && node.getRightChildNode() != null) {
+			//ir abi bērni
+				//ja kreisais ir lielāks par labo
+				//tad kreiso salīdzinam ar node.element
+				//pēc nepieciešamības mainām vietam un izsaucām uz kreiso pusi rekursīvi funkciju
+				
+				//ja kreisais ir mazāks vai vienāds par labo
+				//tad labo salīdzinam ar node.element
+				//pēc nepieciešamības mainām vietam un izsaucām uz labo pusi rekursīvi funkciju
+				
+			}
+			//nav bērnu  else if(node.getLeftChildNode() ==null  && node.getRightChildNode() == null)
+			//tajā situācijā arī nekas nav jādara, tāpēc else if nav jāraksta
+		}
+	}
 }
