@@ -1,24 +1,30 @@
 package datastr;
 
-public class MyHeap <Ttype> {
+import java.util.LinkedList;
+import java.util.Queue;
+
+import javax.imageio.ImageTranscoder;
+
+public class MyHeap<Ttype> {
 	private MyNode<Ttype> rootNode = null;
 	private MyNode<Ttype> lastNode = null;
 	private int howManyElements = 0;
 	private int level = 0;
-	
+
 	public int getHowManyElements() {
 		return howManyElements;
 	}
-	
-	//get funkciajs netaisām blokiem, lai lietotajs tiem netiek klāt
-	//set funkcijas netaisām, jo neļaujam lieottajam mainīt ne blokus, ne arī elementa skaitu
-	
-	//bez argumenta konstruktors nāks no Object klases, tāpec paši netaisām
-	
+
+	// get funkciajs netaisām blokiem, lai lietotajs tiem netiek klāt
+	// set funkcijas netaisām, jo neļaujam lieottajam mainīt ne blokus, ne arī
+	// elementa skaitu
+
+	// bez argumenta konstruktors nāks no Object klases, tāpec paši netaisām
+
 	public boolean isEmpty() {
 		return (howManyElements == 0);
 	}
-	
+
 	public boolean isFull() {
 		try {
 			new MyNode('a');
@@ -29,164 +35,226 @@ public class MyHeap <Ttype> {
 
 	}
 
-	
-	public void add(Ttype element) throws Exception{
-		if(isFull()) {
+	public void add(Ttype element) throws Exception {
+		if (isFull()) {
 			throw new Exception("Kaudze ir pilna un nevar pievienot jaunu elementu");
 		}
-		
-		if(element == null) {
+
+		if (element == null) {
 			throw new Exception("Ievades elements nevar būt null");
 		}
-		
-		//ja kaudze ir tukša, tad jaunais bloks būs vienīagis
-		if(isEmpty()) {
+
+		// ja kaudze ir tukša, tad jaunais bloks būs vienīagis
+		if (isEmpty()) {
 			MyNode newNode = new MyNode(element);
 			rootNode = newNode;
 			lastNode = newNode;
 			howManyElements++;
 		}
-		//jāpievieno kārtejais elements
-		else
-		{
+		// jāpievieno kārtejais elements
+		else {
 			MyNode newNode = new MyNode(element);
-			//pievienot jauno bloku, lai nodrošinātu formas īpašību
-			//pievienot pie sakni
-			if(howManyElements == 1) {
+			// pievienot jauno bloku, lai nodrošinātu formas īpašību
+			// pievienot pie sakni
+			if (howManyElements == 1) {
 				newNode.setParentNode(rootNode);
 				rootNode.setLeftChildNode(newNode);
 				lastNode = newNode;
 				level++;
-			}
-			
-			//noskaidrojam, vai ir eksistējošam blokam labās puses māsa/brālis
-			if(lastNode.getParentNode().getRightChildNode() == null) {
-				lastNode.getParentNode().setRightChildNode(newNode);
-				newNode.setParentNode(lastNode.getParentNode());
-				lastNode = newNode;
-			}
-			
-			//2^0 - 0. līmenī ir 1 bērns
-			//2^1 - 1. līmenī ir 2 bērni
-			//2^2 - 2. līmenī ir 4 bērni
-			int sum = 0;
-			for(int i = 0; i < level; i++) {
-				sum += Math.pow(2, i);
-			}
-			//ja lastNode ir konkrētajā līmenī pēdējais bloks
-			if(howManyElements == sum) {//šo var optimizēt ar howManyElements == 1 scenāriju
-				MyNode currentNode = rootNode;
-				
-				while(currentNode.getLeftChildNode()!=null) {
-					currentNode = currentNode.getLeftChildNode();
+				reheapUp(newNode);
+				howManyElements++;
+				return;
+			} else {
+				// noskaidrojam, vai ir eksistējošam blokam labās puses māsa/brālis
+				if (lastNode.getParentNode().getRightChildNode() == null) {
+					lastNode.getParentNode().setRightChildNode(newNode);
+					newNode.setParentNode(lastNode.getParentNode());
+					lastNode = newNode;
+					reheapUp(newNode);
+					howManyElements++;
+					return;
 				}
-				
-				currentNode.setLeftChildNode(newNode);
-				newNode.setParentNode(currentNode);
-				lastNode = newNode;
-			}
-			
-			
-			reheapUp(newNode);
-			howManyElements++;
-			
-		}
-	}
-		private void reheapUp(MyNode node) {
-			if(node != null && node.getParentNode() != null) {
-				MyNode tempParentNode = node.getParentNode();
-				//if(tempParentNode.getElement() < node.getElement()) {
-				if(((Comparable)tempParentNode.getElement()).compareTo(node.getElement()) < 0) {
-					Ttype tempElement = (Ttype)tempParentNode.getElement();
-					tempParentNode.setElement(node.getElement());
-					node.setElement(tempElement);
-					reheapUp(tempParentNode);
+
+				// 2^0 - 0. līmenī ir 1 bērns
+				// 2^1 - 1. līmenī ir 2 bērni
+				// 2^2 - 2. līmenī ir 4 bērni
+				int sum = 0;
+				for (int i = 0; i <= level; i++) {
+					sum += Math.pow(2, i);
 				}
+				// ja lastNode ir konkrētajā līmenī pēdējais bloks
+				if (howManyElements == sum) {// šo var optimizēt ar howManyElements == 1 scenāriju
+					MyNode currentNode = rootNode;
+
+					while (currentNode.getLeftChildNode() != null) {
+						currentNode = currentNode.getLeftChildNode();
+					}
+
+					currentNode.setLeftChildNode(newNode);
+					newNode.setParentNode(currentNode);
+					lastNode = newNode;
+					reheapUp(newNode);
+					howManyElements++;
+					return;
+				}
+
+				if (lastNode.getParentNode().getLeftChildNode() != null
+						&& lastNode.getParentNode().getRightChildNode() != null) {
+					MyNode currentParent = findInsertionNode();
+					
+					currentParent.setLeftChildNode(newNode);
+					newNode.setParentNode(currentParent);
+					
+					lastNode = newNode;
+					reheapUp(newNode);
+					howManyElements++;
+					return;
+				}
+
 			}
 
+		}
 	}
-	
-	public void print() throws Exception{
-		if(isEmpty()) {
+
+	private MyNode findInsertionNode() {
+		Queue<MyNode> queue = new LinkedList();
+		queue.add(rootNode);
+		while (!queue.isEmpty()) {
+			MyNode currentNode = queue.poll();
+			if (currentNode.getLeftChildNode() == null) {
+				return currentNode;
+			} else {
+				queue.add(currentNode.getLeftChildNode());
+			}
+			if (currentNode.getRightChildNode() == null) {
+				return currentNode;
+			} else {
+				queue.add(currentNode.getRightChildNode());
+			}
+		}
+		return null;
+	}
+
+	private void reheapUp(MyNode node) {
+		if (node != null && node.getParentNode() != null) {
+			MyNode tempParentNode = node.getParentNode();
+			// if(tempParentNode.getElement() < node.getElement()) {
+			if (((Comparable) tempParentNode.getElement()).compareTo(node.getElement()) < 0) {
+				Ttype tempElement = (Ttype) tempParentNode.getElement();
+				tempParentNode.setElement(node.getElement());
+				node.setElement(tempElement);
+				reheapUp(tempParentNode);
+			}
+		}
+
+	}
+
+	public void print() throws Exception {
+		if (isEmpty()) {
 			throw new Exception("Kaudze ir tukša un nav elementu, ko printēt");
 		}
-		
+
 		printHelper(rootNode);
 
 	}
-	
+
 	private void printHelper(MyNode node) {
-		if(node != null) {
+		if (node != null) {
 			System.out.println("P: " + node.getElement());
-			
-			if(node.getLeftChildNode() != null) {
-				System.out.println("P: " + node.getElement() 
-				+ " LC: " + node.getLeftChildNode().getElement());
+
+			if (node.getLeftChildNode() != null) {
+				System.out.println("P: " + node.getElement() + " LC: " + node.getLeftChildNode().getElement());
 				printHelper(node.getLeftChildNode());
 			}
-			
-			if(node.getRightChildNode() != null) {
-				System.out.println("P: " + node.getElement() 
-				+"RC: " + node.getRightChildNode().getElement());
+
+			if (node.getRightChildNode() != null) {
+				System.out.println("P: " + node.getElement() + "RC: " + node.getRightChildNode().getElement());
 				printHelper(node.getRightChildNode());
 			}
 		}
 	}
-	
-	
-	public Ttype getMaxElement() throws Exception{
-		if(isEmpty()) {
+
+	public Ttype getMaxElement() throws Exception {
+		if (isEmpty()) {
 			throw new Exception("Kaudze ir tukša un nav prioritārais elements");
 		}
-		
+
 		Ttype maxElement = rootNode.getElement();
-		
+
 		rootNode.setElement(lastNode.getElement());
-		
+
 		MyNode tempParentNode = lastNode.getParentNode();
-		//ja tas ir kreisais bērnus, kurš jādzēš
-		//eksistē kreisais bērns, bet nav labais, tad jādzēš kreisais
-		if(tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode()==null) {
+		// ja tas ir kreisais bērnus, kurš jādzēš
+		// eksistē kreisais bērns, bet nav labais, tad jādzēš kreisais
+		if (tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode() == null) {
 			tempParentNode.setLeftChildNode(null);
 		}
-		//ja ir abi bērnu, tad labais būs jādzēš
-		else if(tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode()!=null)
-		{
+		// ja ir abi bērnu, tad labais būs jādzēš
+		else if (tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode() != null) {
 			tempParentNode.setRightChildNode(null);
 		}
-		
-		//TODO reheapDown(rootNode);
+
+		//TODO pec bloka izņemšas atrast lastNode bloku 
+		reheahDown(rootNode);
 		howManyElements--;
 		return maxElement;
 	}
-	
+
 	private void reheahDown(MyNode node) {
-		if(node!=null) {
-			//ir tikai kreisais berns
-			if(node.getLeftChildNode() !=null  && node.getRightChildNode() == null)
-			{
+		if (node != null) {
+			// ir tikai kreisais berns
+			if (node.getLeftChildNode() != null && node.getRightChildNode() == null) {
 				MyNode tempLeftChildNode = node.getLeftChildNode();
-				
-				if(  ((Comparable)tempLeftChildNode.getElement()).compareTo(node.getElement()) > 0 ) {
-					Ttype tempElement = (Ttype)tempLeftChildNode.getElement();
+
+				if (((Comparable) tempLeftChildNode.getElement()).compareTo(node.getElement()) > 0) {
+					Ttype tempElement = (Ttype) tempLeftChildNode.getElement();
 					tempLeftChildNode.setElement(node.getElement());
 					node.setElement(tempElement);
 				}
+
+			} else if (node.getLeftChildNode() != null && node.getRightChildNode() != null) {
+				// ir abi bērni
+				// ja kreisais ir lielāks par labo
+				if (((Comparable) node.getLeftChildNode().getElement())
+						.compareTo(node.getRightChildNode().getElement()) > 0) {
+					// tad kreiso salīdzinam ar node.element
+					// pēc nepieciešamības mainām vietam un izsaucām uz kreiso pusi rekursīvi
+					// funkciju
+					if (((Comparable) node.getLeftChildNode().getElement())
+							.compareTo(node.getElement()) > 0) {
+						
+						Ttype tempElement = (Ttype) node.getElement();
+						node.setElement(node.getLeftChildNode().getElement());
+						node.getLeftChildNode().setElement(tempElement);
+						reheahDown(node.getLeftChildNode());
+						
+					}
+					
+					
+					
+				}
+				else
+				{
+					if (((Comparable) node.getRightChildNode().getElement())
+							.compareTo(node.getElement()) > 0) {
+						
+						Ttype tempElement = (Ttype) node.getElement();
+						node.setElement(node.getRightChildNode().getElement());
+						node.getRightChildNode().setElement(tempElement);
+						reheahDown(node.getLeftChildNode());
+						
+					}
+				}
 				
+
+				// ja kreisais ir mazāks vai vienāds par labo
+				// tad labo salīdzinam ar node.element
+				// pēc nepieciešamības mainām vietam un izsaucām uz labo pusi rekursīvi funkciju
+
 			}
-			else if(node.getLeftChildNode() !=null  && node.getRightChildNode() != null) {
-			//ir abi bērni
-				//ja kreisais ir lielāks par labo
-				//tad kreiso salīdzinam ar node.element
-				//pēc nepieciešamības mainām vietam un izsaucām uz kreiso pusi rekursīvi funkciju
-				
-				//ja kreisais ir mazāks vai vienāds par labo
-				//tad labo salīdzinam ar node.element
-				//pēc nepieciešamības mainām vietam un izsaucām uz labo pusi rekursīvi funkciju
-				
-			}
-			//nav bērnu  else if(node.getLeftChildNode() ==null  && node.getRightChildNode() == null)
-			//tajā situācijā arī nekas nav jādara, tāpēc else if nav jāraksta
+			// nav bērnu else if(node.getLeftChildNode() ==null && node.getRightChildNode()
+			// == null)
+			// tajā situācijā arī nekas nav jādara, tāpēc else if nav jāraksta
 		}
 	}
 }
