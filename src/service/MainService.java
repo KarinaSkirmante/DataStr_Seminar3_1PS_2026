@@ -1,10 +1,13 @@
 package service;
 
 import datastr.MyHeap;
+import model.Patient;
 
 public class MainService {
 
 	public static void main(String[] args) {
+		
+		System.out.println("-----------DARBS AR SKAITĻIEM-----------");
 		MyHeap<Integer> heapForInt = new MyHeap<Integer>();
 
 		try {
@@ -101,6 +104,63 @@ public class MainService {
 			System.out.println(e.getMessage());
 		}
 
+		
+		
+		System.out.println("---------------DARBS AR PACIENTIEM--------------");
+		MyHeap<Patient> heapForPatient = new MyHeap<Patient>();
+		
+		try {
+			heapForPatient.add(new Patient("Anna", "Berzina", 10));
+			/*
+			      Anna(10)
+			*/
+
+			heapForPatient.add(new Patient("Janis", "Kalnins", 20));
+			/*
+			      Janis(20)
+			     /
+			   Anna(10)
+			*/
+
+			heapForPatient.add(new Patient("Laura", "Ozola", 30));
+			/*
+			      Laura(30)
+			     /       \
+			   Anna(10)  Janis(20)
+			*/
+
+			heapForPatient.add(new Patient("Peteris", "Liepa", 50));
+			/*
+			        Peteris(50)
+			       /          \
+			   Laura(30)    Janis(20)
+			   /
+			Anna(10)
+			*/
+
+			heapForPatient.add(new Patient("Marta", "Eglite", 5));
+			/*
+			        Peteris(50)
+			       /          \
+			   Laura(30)    Janis(20)
+			   /      \
+			Anna(10) Marta(5)
+			*/
+
+			heapForPatient.add(new Patient("Rihards", "Krumins", 7));
+			/*
+			        Peteris(50)
+			       /          \
+			   Laura(30)    Janis(20)
+			   /      \      /
+			Anna(10) Marta(5) Rihards(7)
+			*/
+
+			System.out.println("------------------------------");
+			heapForPatient.print();
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 }
