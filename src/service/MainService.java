@@ -11,6 +11,7 @@ public class MainService {
 		MyHeap<Integer> heapForInt = new MyHeap<Integer>();
 
 		try {
+			System.out.println("--------ELEMENTU PIEVIENOŠANA---------------");
 			heapForInt.add(10);
 			/*
 			      10
@@ -100,6 +101,49 @@ public class MainService {
 			*/
 
 			heapForInt.print();
+			
+			System.out.println("MAX element: " + heapForInt.getMaxElement());//55
+			/*
+	          50
+	        /    \
+	      30      20
+	     / \     / \
+	   10   5   7   3
+	  / \   
+	 4   6 
+	*/
+			System.out.println("--------ELEMENTU IZŅEMŠANA---------------");
+			System.out.println("MAX element: " + heapForInt.getMaxElement());//50
+			/*
+	          30
+	        /    \
+	      10      20
+	     / \     / \
+	    6   5   7   3
+	  /    
+  	 4    
+	*/	
+			System.out.println("MAX element: " + heapForInt.getMaxElement());//30
+			/*
+	          20
+	        /    \
+	      10      7
+	     / \     / \
+	    6   5   4   3
+	      
+	    
+	*/			
+			System.out.println("MAX element: " + heapForInt.getMaxElement());//20
+			/*
+	          10
+	        /    \
+	      6      7
+	     / \     / 
+	    3   5   4   
+	      
+	    
+	*/	
+			heapForInt.print();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -110,6 +154,7 @@ public class MainService {
 		MyHeap<Patient> heapForPatient = new MyHeap<Patient>();
 		
 		try {
+			System.out.println("--------ELEMENTU PIEVIENOŠANA---------------");
 			heapForPatient.add(new Patient("Anna", "Berzina", 10));
 			/*
 			      Anna(10)
@@ -151,15 +196,33 @@ public class MainService {
 			/*
 			        Peteris(50)
 			       /          \
-			   Laura(30)    Janis(20)
-			   /      \      /
+			   Laura(30)      Janis(20)
+			   /      \        /
 			Anna(10) Marta(5) Rihards(7)
 			*/
 
 			System.out.println("------------------------------");
 			heapForPatient.print();
+			System.out.println("--------ELEMENTU IZŅEMŠANA---------------");
+			System.out.println("MAX element: " + heapForPatient.getMaxElement());//Peteris (50)
+			/*
+	        Laura(30)
+	       /          \
+	   Anna(10)      Janis(20)
+	   /      \        
+	Rihards(7) Marta(5) 
+	*/
+			System.out.println("MAX element: " + heapForPatient.getMaxElement());//Laura (30)
+			/*
+	        Janis(20)
+	       /          \
+	   Anna(10)      Marta(5)
+	   /              
+	Rihards(7) 
+	*/
+			heapForPatient.print();
 		}catch (Exception e) {
-			// TODO: handle exception
+			System.out.println(e.getMessage());
 		}
 	}
 

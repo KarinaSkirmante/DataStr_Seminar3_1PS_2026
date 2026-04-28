@@ -95,16 +95,17 @@ public class MyHeap<Ttype> {
 					lastNode = newNode;
 					reheapUp(newNode);
 					howManyElements++;
+					level++;
 					return;
 				}
 
 				if (lastNode.getParentNode().getLeftChildNode() != null
 						&& lastNode.getParentNode().getRightChildNode() != null) {
 					MyNode currentParent = findInsertionNode();
-					
+
 					currentParent.setLeftChildNode(newNode);
 					newNode.setParentNode(currentParent);
-					
+
 					lastNode = newNode;
 					reheapUp(newNode);
 					howManyElements++;
@@ -181,49 +182,78 @@ public class MyHeap<Ttype> {
 
 		Ttype maxElement = rootNode.getElement();
 
-		rootNode.setElement(lastNode.getElement());
+		if (howManyElements == 1) {
+			rootNode = null;
+			lastNode = null;
+			howManyElements = 0;
+			return maxElement;
+		} else {
+			rootNode.setElement(lastNode.getElement());
 
-		MyNode tempParentNode = lastNode.getParentNode();
-		// ja tas ir kreisais bērnus, kurš jādzēš
-		// eksistē kreisais bērns, bet nav labais, tad jādzēš kreisais
-		if (tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode() == null) {
-			tempParentNode.setLeftChildNode(null);
-		}
-		// ja ir abi bērnu, tad labais būs jādzēš
-		else if (tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode() != null) {
-			tempParentNode.setRightChildNode(null);
-		}
+			MyNode tempParentNode = lastNode.getParentNode();
 
-		//TODO pec bloka izņemšas atrast lastNode bloku 
-		reheahDown(rootNode);
-		howManyElements--;
-		return maxElement;
+			// ja ir abi bērnu, tad labais būs jādzēš
+			if (tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode() != null) {
+				tempParentNode.setRightChildNode(null);
+
+				// un kreisais bērns kļūst par pēdējo lapu
+				lastNode = tempParentNode.getLeftChildNode();
+			}
+			// ja tas ir kreisais bērnus, kurš jādzēš
+			// eksistē kreisais bērns, bet nav labais, tad jādzēš kreisais
+			else if (tempParentNode.getLeftChildNode() != null && tempParentNode.getRightChildNode() == null) {
+				tempParentNode.setLeftChildNode(null);
+			}
+
+			// jānoskaidro, vai jāpārlec uz iepriekšējo līmeni, vai arī jāpāriet uz kreiso
+			// kaimiņu
+
+			// jānoskaidro par līmeņiem
+			int sum = 0;
+			for (int i = 0; i < level; i++) {
+				sum += Math.pow(2, i);
+			}
+			System.out.println(sum + " " + howManyElements);
+			if (sum == howManyElements - 1) {//ja ir jāpārlec uz iepriekšējo līmeni
+
+				MyNode<Ttype> currentNode = rootNode;
+				while (currentNode.getRightChildNode() != null) {
+					currentNode = currentNode.getRightChildNode();
+				}
+				lastNode = currentNode;
+				level--;
+
+			} else {//ja ir jāpāŗiet uz kreiso kaimiņu
+				MyNode<Ttype> tempNode = findLeafAtLevel(rootNode, 0, level);
+				lastNode = tempNode;
+			}
+
+			reheahDown(rootNode);
+			howManyElements--;
+			return maxElement;
+		}
 	}
 
-	
 	private static MyNode findLeafAtLevel(MyNode node, int currentLevel, int targetLevel) {
-        if (node !=null)
-        {
+		if (node != null) {
 
-        if (currentLevel == targetLevel) {
-            if (node.getLeftChildNode() == null && node.getRightChildNode() == null) {
-                return node; // atrasts mezgls bez bērniem
-            }
-            return null;
-        }
+			if (currentLevel == targetLevel) {
+				if (node.getLeftChildNode() == null && node.getRightChildNode() == null) {
+					return node; // atrasts mezgls bez bērniem
+				}
+				return null;
+			}
 
-        MyNode found = findLeafAtLevel(node.getLeftChildNode(), currentLevel + 1, targetLevel);
-        if (found != null) {
-            return found;
-        }
+			MyNode found = findLeafAtLevel(node.getRightChildNode(), currentLevel + 1, targetLevel);
+			if (found != null) {
+				return found;
+			}
 
-        return findLeafAtLevel(node.getRightChildNode(), currentLevel + 1, targetLevel);
-        }
-        else
-        	return null;
-    }
-	
-	
+			return findLeafAtLevel(node.getLeftChildNode(), currentLevel + 1, targetLevel);
+		} else
+			return null;
+	}
+
 	private void reheahDown(MyNode node) {
 		if (node != null) {
 			// ir tikai kreisais berns
@@ -244,32 +274,25 @@ public class MyHeap<Ttype> {
 					// tad kreiso salīdzinam ar node.element
 					// pēc nepieciešamības mainām vietam un izsaucām uz kreiso pusi rekursīvi
 					// funkciju
-					if (((Comparable) node.getLeftChildNode().getElement())
-							.compareTo(node.getElement()) > 0) {
+					if (((Comparable) node.getLeftChildNode().getElement()).compareTo(node.getElement()) > 0) {
 						
 						Ttype tempElement = (Ttype) node.getElement();
 						node.setElement(node.getLeftChildNode().getElement());
 						node.getLeftChildNode().setElement(tempElement);
 						reheahDown(node.getLeftChildNode());
-						
+
 					}
-					
-					
-					
-				}
-				else
-				{
-					if (((Comparable) node.getRightChildNode().getElement())
-							.compareTo(node.getElement()) > 0) {
-						
+
+				} else {
+					if (((Comparable) node.getRightChildNode().getElement()).compareTo(node.getElement()) > 0) {
+
 						Ttype tempElement = (Ttype) node.getElement();
 						node.setElement(node.getRightChildNode().getElement());
 						node.getRightChildNode().setElement(tempElement);
-						reheahDown(node.getLeftChildNode());
-						
+						reheahDown(node.getRightChildNode());
+
 					}
 				}
-				
 
 				// ja kreisais ir mazāks vai vienāds par labo
 				// tad labo salīdzinam ar node.element
