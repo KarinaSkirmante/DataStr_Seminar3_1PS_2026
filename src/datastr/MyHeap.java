@@ -200,6 +200,30 @@ public class MyHeap<Ttype> {
 		return maxElement;
 	}
 
+	
+	private static MyNode findLeafAtLevel(MyNode node, int currentLevel, int targetLevel) {
+        if (node !=null)
+        {
+
+        if (currentLevel == targetLevel) {
+            if (node.getLeftChildNode() == null && node.getRightChildNode() == null) {
+                return node; // atrasts mezgls bez bērniem
+            }
+            return null;
+        }
+
+        MyNode found = findLeafAtLevel(node.getLeftChildNode(), currentLevel + 1, targetLevel);
+        if (found != null) {
+            return found;
+        }
+
+        return findLeafAtLevel(node.getRightChildNode(), currentLevel + 1, targetLevel);
+        }
+        else
+        	return null;
+    }
+	
+	
 	private void reheahDown(MyNode node) {
 		if (node != null) {
 			// ir tikai kreisais berns
